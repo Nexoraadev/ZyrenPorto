@@ -1,0 +1,214 @@
+/* stylelint-disable at-rule-no-unknown */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* stylelint-enable at-rule-no-unknown */
+
+/* ── Dark mode (default) ── */
+:root,
+[data-theme="dark"] {
+  --bg-primary:    #050B10;
+  --bg-secondary:  #081018;
+  --bg-card:       #0c1821;
+  --bg-card-hover: #102030;
+  --text-primary:  #e2e8f0;
+  --text-secondary:#8992a0;
+  --text-muted:    #4a5668;
+  --border:        #172a3a;
+  --border-hover:  #23405a;
+  --section-alt:   #070e15;
+  --overlay-left:  rgba(5,11,16,0.82);
+  --hero-name-2:   #5EEAD4;
+  --input-bg:      #0a1520;
+}
+
+/* ── Light mode — warm cream ── */
+[data-theme="light"] {
+  --bg-primary:    #f5ede9;
+  --bg-secondary:  #ede0da;
+  --bg-card:       #fdf7f5;
+  --bg-card-hover: #f8efeb;
+  --text-primary:  #1a0a0a;
+  --text-secondary:#4a2828;
+  --text-muted:    #7a5252;
+  --border:        #d4c0bb;
+  --border-hover:  #b89890;
+  --section-alt:   #ecddd8;
+  --overlay-left:  rgba(245,237,233,0.82);
+  --hero-name-2:   #7a3030;
+  --input-bg:      #ede0da;
+}
+
+* { box-sizing: border-box; padding: 0; margin: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.35s ease, color 0.35s ease;
+  overflow-x: clip;
+}
+
+main  { position: relative; z-index: 2; }
+
+main > *:not(:first-child),
+main > *:not(:first-child) > * {
+  position: relative;
+  z-index: 10;
+}
+
+section { position: relative; isolation: isolate; }
+header, footer { position: relative; z-index: 50; }
+
+@media (max-width: 767px) {
+  main {
+    padding-bottom: 72px; /* clear mobile bottom nav 64px + 8px gap */
+  }
+  footer {
+    margin-bottom: 0;
+    padding-bottom: 72px; /* also clear bottom nav on footer */
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar       { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
+::-webkit-scrollbar-thumb { background: #0e7490; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #0891b2; }
+::selection { background: rgba(8,145,178,0.35); color: #fff; }
+
+/* ── Light mode — comprehensive overrides ── */
+[data-theme="light"] {
+
+  /* Backgrounds */
+  color-scheme: light;
+
+  /* Section backgrounds */
+  & section { background-color: var(--bg-primary) !important; }
+
+  /* Dark tailwind bg classes → light equivalents */
+  & .bg-dark-950    { background-color: var(--bg-primary)   !important; }
+  & .bg-dark-900    { background-color: var(--bg-secondary)  !important; }
+  & .bg-dark-900\/60{ background-color: rgba(237,224,218,0.6) !important; }
+  & .bg-dark-900\/20{ background-color: rgba(237,224,218,0.2) !important; }
+  & .bg-dark-900\/30{ background-color: rgba(237,224,218,0.3) !important; }
+  & .bg-dark-900\/40{ background-color: rgba(237,224,218,0.4) !important; }
+  & .bg-dark-900\/50{ background-color: rgba(237,224,218,0.5) !important; }
+  & .bg-\[#0d0d0d\] { background-color: var(--section-alt)  !important; }
+  & .bg-\[#0a0a0a\] { background-color: var(--bg-primary)   !important; }
+  & .bg-\[#111111\] { background-color: var(--bg-secondary)  !important; }
+
+  /* Text */
+  & .text-dark-100  { color: #160808 !important; }
+  & .text-dark-200  { color: #2a1010 !important; }
+  & .text-dark-300  { color: #3a2020 !important; }
+  & .text-dark-400  { color: var(--text-secondary) !important; }
+  & .text-dark-500  { color: var(--text-muted)     !important; }
+  & .text-dark-600  { color: #9a7070 !important; }
+  & .text-dark-700  { color: #b89090 !important; }
+
+  /* Borders */
+  & .border-dark-800 { border-color: var(--border)       !important; }
+  & .border-dark-700 { border-color: var(--border-hover)  !important; }
+  & .border-dark-900 { border-color: var(--border)        !important; }
+  & .border-dark-800\/60 { border-color: rgba(212,192,187,0.6) !important; }
+
+  /* Inputs */
+  & input, & textarea, & select {
+    background-color: var(--input-bg) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border) !important;
+  }
+
+  /* Cards */
+  & .card-dark {
+    background: var(--bg-card) !important;
+    border-color: var(--border) !important;
+  }
+
+  /* Animated gradient hero background */
+  & .animated-gradient-bg {
+    background: linear-gradient(
+      135deg,
+      #f5ede9 0%, #f0e0d8 20%,
+      #f5ede9 40%, #ecddd6 60%,
+      #f5ede9 80%, #f0e0d8 100%
+    ) !important;
+    background-size: 400% 400% !important;
+  }
+
+  /* Aurora blobs — lighter tint */
+  & .blur-\[130px\], & .blur-\[150px\] { opacity: 0.04 !important; }
+
+  /* Starfield canvas — lighter */
+  & canvas { opacity: 0.25 !important; }
+
+  /* Navbar */
+  & header { border-color: var(--border) !important; }
+}
+
+@layer utilities {
+  .text-gradient-blood {
+    background: linear-gradient(135deg, #22d3ee 0%, #0891b2 50%, #06b6d4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .card-dark {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    transition: border-color 0.2s ease, background-color 0.35s ease;
+  }
+  .card-dark:hover {
+    border-color: var(--border-hover);
+    background: var(--bg-card-hover);
+  }
+}
+
+/* ── Animated gradient ── */
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%;   }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%;   }
+}
+
+.animated-gradient-bg {
+  background: linear-gradient(
+    135deg,
+    #050B10 0%, #081828 25%,
+    #050B10 50%, #0a1e32 75%,
+    #050B10 100%
+  );
+  background-size: 400% 400%;
+  animation: gradientShift 12s ease infinite;
+}
+
+/* ── Performance: defer rendering of offscreen sections ── */
+#about,
+#skills,
+#certificates,
+#projects,
+#contact {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 600px;
+}
+
+/* ── Mobile touch performance ── */
+a, button, [role="button"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Reduce animation on low-end devices (prefers-reduced-motion) ── */
+@media (prefers-reduced-motion: reduce) {
+  .animated-gradient-bg {
+    animation: none;
+  }
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
