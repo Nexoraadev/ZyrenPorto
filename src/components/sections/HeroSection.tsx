@@ -116,9 +116,9 @@ function HeroBg() {
           {/* ── Stack annotations ── */}
           <g fontFamily="var(--font-geist-mono,'SF Mono',monospace)"
             fontSize="12" fill="rgba(34,211,238,0.35)" letterSpacing="1.8">
-            <text x="432" y="640">// FULL STACK</text>
-            <text x="432" y="660">// WEB &amp; APP</text>
-            <text x="432" y="680">// OPEN SOURCE</text>
+            <text x="432" y="640">{'// FULL STACK'}</text>
+            <text x="432" y="660">{'// WEB & APP'}</text>
+            <text x="432" y="680">{'// OPEN SOURCE'}</text>
           </g>
 
           {/* ── Top-right tagline ── */}

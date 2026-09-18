@@ -148,10 +148,10 @@ function EditorialLayer() {
             fontFamily="var(--font-geist-mono, 'SF Mono', monospace)"
             fontSize="13" fill="rgba(34, 211, 238, 0.39)" letterSpacing="1.5"
           >
-            <text x="482" y="610">// FULL STACK</text>
-            <text x="482" y="632">// WEB &amp; APP</text>
-            <text x="482" y="654">// OPEN SOURCE</text>
-            <text x="482" y="676">// 2026 —</text>
+            <text x="482" y="610">{'// FULL STACK'}</text>
+            <text x="482" y="632">{'// WEB & APP'}</text>
+            <text x="482" y="654">{'// OPEN SOURCE'}</text>
+            <text x="482" y="676">{'// 2026 —'}</text>
           </g>
 
           {/* ── Top-right small tagline ── */}
