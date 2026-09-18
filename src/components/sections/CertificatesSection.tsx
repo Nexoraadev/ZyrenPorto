@@ -108,7 +108,7 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
         </GlitchReveal>
 
         <div className="relative">
-          {Object.entries(grouped).map(([yearStr, items]) => {
+          {Object.entries(grouped).map(([yearStr, items]: [string, Certificate[]]) => {
             const year = Number(yearStr);
             const roman = toRoman(year - 2022) || "I";
             return (
