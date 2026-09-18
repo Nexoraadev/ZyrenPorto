@@ -152,6 +152,7 @@ export function CertificatesManager({ initialCerts }: CertificatesManagerProps) 
         file_type,
         linkedin_url: mode === "link" ? (form.linkedin_url.trim() || null) : null,
         order_index: certs.length,
+        category: null as string | null,
       };
 
       const result = await callApi("upsert_certificate", { certData, certId: null });
