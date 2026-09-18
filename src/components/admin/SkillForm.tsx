@@ -16,6 +16,7 @@ export function SkillForm({ skill }: SkillFormProps) {
   const [form, setForm] = useState({
     name:        skill?.name        ?? "",
     category:    skill?.category    ?? "Frontend",
+    description: skill?.description ?? "",
     icon:        skill?.icon        ?? "",
     icon_size:   Number(skill?.icon_size ?? 70),
     order_index: skill?.order_index ?? 0,
@@ -25,7 +26,7 @@ export function SkillForm({ skill }: SkillFormProps) {
   const [error,   setError  ] = useState<string | null>(null);
 
   function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) {
     const { name, value, type } = e.target;
     setForm((prev) => ({
@@ -40,24 +41,34 @@ export function SkillForm({ skill }: SkillFormProps) {
     setError(null);
 
     const supabase = createAdminClient();
-    const payload = {
+    const base = {
       name:        form.name,
       category:    form.category,
+      description: form.description.trim() || null,
       icon:        form.icon || null,
-      icon_size:   Number(form.icon_size),
       order_index: Number(form.order_index),
       level:       0,
     };
 
-    const saveSkill = async (withSize: boolean) => {
-      const data = withSize ? payload : { name: payload.name, category: payload.category, icon: payload.icon, order_index: payload.order_index, level: payload.level };
-      if (isEdit) return supabase.from("skills").update(data).eq("id", skill.id);
-      return supabase.from("skills").insert(data);
-    };
+    const variants = [
+      { ...base, icon_size: Number(form.icon_size) },
+      { ...base },
+      {
+        name: base.name,
+        category: base.category,
+        icon: base.icon,
+        order_index: base.order_index,
+        level: base.level,
+      },
+    ];
 
-    let { error } = await saveSkill(true);
-    if (error?.message?.includes("icon_size")) {
-      ({ error } = await saveSkill(false));
+    let error: { message: string } | null = null;
+    for (const data of variants) {
+      const result = isEdit
+        ? await supabase.from("skills").update(data).eq("id", skill!.id)
+        : await supabase.from("skills").insert(data);
+      error = result.error;
+      if (!error) break;
     }
     if (error) { setError(error.message); setLoading(false); return; }
 
@@ -97,6 +108,22 @@ export function SkillForm({ skill }: SkillFormProps) {
             <option key={c} value={c}>{c}</option>
           ))}
         </select>
+      </div>
+
+      {/* Description — tooltip di orbit */}
+      <div>
+        <label className={labelClass}>Keterangan</label>
+        <textarea
+          name="description"
+          value={form.description}
+          onChange={handleChange}
+          rows={3}
+          placeholder="Hosting repository, kolaborasi code, dan open source workflow."
+          className={`${inputClass} resize-y min-h-[88px]`}
+        />
+        <p className="text-[10px] text-dark-600 font-mono mt-1.5">
+          {`// Tampil saat hover icon di section Skills & Tools`}
+        </p>
       </div>
 
       {/* Icon URL + size — side by side */}

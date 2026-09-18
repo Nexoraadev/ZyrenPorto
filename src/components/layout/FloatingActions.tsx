@@ -18,7 +18,12 @@ export function FloatingActions() {
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       aria-label="Scroll to top"
       className={cn(
-        "fixed z-[9990]",
+        "fixed z-[9990] right-5",
+        // Mobile: chat button is at bottom 80px (above 64px nav + 16px gap)
+        //         this button sits above chat: 80 + 44 (ball) + 10 (gap) = 134px
+        "bottom-[134px]",
+        // Desktop md+: restore original stack
+        "md:bottom-[145px]",
         "w-10 h-10 rounded-full",
         "bg-blood-700 hover:bg-blood-600 text-white",
         "flex items-center justify-center",
@@ -28,10 +33,6 @@ export function FloatingActions() {
           ? "opacity-100 translate-y-0 pointer-events-auto"
           : "opacity-0 translate-y-4 pointer-events-none"
       )}
-      style={{
-        right:  "20px",
-        bottom: "145px", // di atas chatbot kita (36px) + Tidio (~60px) + gap 5px tiap
-      }}
     >
       <ArrowUp size={16} />
     </button>

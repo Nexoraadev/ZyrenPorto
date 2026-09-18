@@ -406,7 +406,7 @@ function BentoCard({
 function EmptyState() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-[220px] gap-4 sm:gap-5">
-      <div className="md:col-span-2 md:row-span-2 rounded-2xl border-dashed border-2 flex flex-col items-center justify-center gap-3 opacity-40"
+      <div className="md:col-span-2 md:row-span-2 rounded-2xl border-dashed border-2 flex flex-col items-center justify-center gap-3 opacity-60"
         style={{ borderColor: "var(--border)", background: "var(--bg-secondary)" }}
       >
         <div className="w-14 h-14 rounded-full border flex items-center justify-center"
@@ -414,13 +414,13 @@ function EmptyState() {
         >
           <Plus size={22} style={{ color: "var(--text-muted)" }} />
         </div>
-        <span className="text-xs font-mono tracking-wider" style={{ color: "var(--text-muted)" }}>
+        <span className="text-xs font-mono tracking-wider" style={{ color: "var(--text-secondary)" }}>
           FEATURED_BUILD_#00 — slot kosong
         </span>
       </div>
       {[2, 3, 4, 5, 6].map(i => (
         <div key={i}
-          className="rounded-2xl border-dashed border-2 flex flex-col items-center justify-center gap-2 opacity-40"
+          className="rounded-2xl border-dashed border-2 flex flex-col items-center justify-center gap-2 opacity-60"
           style={{ borderColor: "var(--border)", background: "var(--bg-secondary)" }}
         >
           <div className="w-10 h-10 rounded-full border flex items-center justify-center"
@@ -428,14 +428,14 @@ function EmptyState() {
           >
             <Plus size={15} style={{ color: "var(--text-muted)" }} />
           </div>
-          <span className="text-[10px] font-mono tracking-wider" style={{ color: "var(--text-muted)" }}>
+          <span className="text-[10px] font-mono tracking-wider" style={{ color: "var(--text-secondary)" }}>
             project_#{String(i).padStart(3, "0")}
           </span>
         </div>
       ))}
       <div className="md:col-span-3 text-center pt-2">
         <p className="text-xs font-mono" style={{ color: "var(--text-muted)" }}>
-          {`// tambah project via dashboard admin → /nexoraa/dashboard/projects`}
+          {/* {`// tambah project via dashboard admin → /nexoraa/dashboard/projects`} */}
         </p>
       </div>
     </div>

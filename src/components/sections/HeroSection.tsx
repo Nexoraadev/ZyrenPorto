@@ -2,8 +2,179 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ErrorCodeScroll } from "@/components/ui/ErrorCodeScroll";
 import Image from "next/image";
+
+// ─── Hero Background — rendered INSIDE the section ───────────────────────────
+function HeroBg() {
+  const glowRef = useRef<HTMLDivElement>(null);
+  const svgRef  = useRef<SVGSVGElement>(null);
+  const rafRef  = useRef<number>(0);
+  const posRef  = useRef({ x: 68, y: 52 });
+  const curRef  = useRef({ x: 68, y: 52 });
+  const parRef  = useRef({ x: 0, y: 0 });
+  const parCur  = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      posRef.current = {
+        x: 50 + (e.clientX / window.innerWidth  - 0.5) * 28,
+        y: 42 + (e.clientY / window.innerHeight - 0.5) * 22,
+      };
+      parRef.current = {
+        x: (e.clientX / window.innerWidth  - 0.5) * 20,
+        y: (e.clientY / window.innerHeight - 0.5) * 12,
+      };
+    };
+    window.addEventListener("mousemove", onMove, { passive: true });
+
+    const animate = () => {
+      // Glow follows pointer slowly
+      curRef.current.x += (posRef.current.x - curRef.current.x) * 0.014;
+      curRef.current.y += (posRef.current.y - curRef.current.y) * 0.014;
+      if (glowRef.current) {
+        glowRef.current.style.background = [
+          `radial-gradient(ellipse 62% 68% at ${curRef.current.x}% ${curRef.current.y}%,`,
+          `rgba(6,182,212,0.30) 0%, rgba(8,145,178,0.18) 28%,`,
+          `rgba(14,116,144,0.08) 52%, transparent 72%)`,
+        ].join(" ");
+      }
+      // SVG parallax
+      parCur.current.x += (parRef.current.x - parCur.current.x) * 0.032;
+      parCur.current.y += (parRef.current.y - parCur.current.y) * 0.032;
+      if (svgRef.current) {
+        svgRef.current.style.transform =
+          `translate(${parCur.current.x * 0.35}px, ${parCur.current.y * 0.35}px)`;
+      }
+      rafRef.current = requestAnimationFrame(animate);
+    };
+    rafRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
+
+  return (
+    <div className="absolute inset-0 z-[1] pointer-events-none overflow-hidden" aria-hidden="true">
+
+      {/* ── Radial portrait glow ── */}
+      <div
+        ref={glowRef}
+        className="absolute inset-0"
+        style={{
+          background: "radial-gradient(ellipse 62% 68% at 68% 52%, rgba(6,182,212,0.30) 0%, rgba(8,145,178,0.18) 28%, rgba(14,116,144,0.08) 52%, transparent 72%)",
+        }}
+      />
+      {/* Depth secondary glow — always anchored right */}
+      <div className="absolute inset-0" style={{
+        background: "radial-gradient(ellipse 40% 50% at 84% 60%, rgba(8,145,178,0.12) 0%, transparent 58%)",
+      }} />
+
+      {/* ── Left readability gradient ── */}
+      <div className="absolute inset-0 hidden md:block" style={{
+        background: "linear-gradient(to right, rgba(4,8,13,0.60) 0%, rgba(4,8,13,0.22) 40%, transparent 58%)",
+      }} />
+
+      {/* ── Film grain ── */}
+      <div className="absolute inset-0" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
+        opacity: 0.04,
+        mixBlendMode: "overlay" as React.CSSProperties["mixBlendMode"],
+      }} />
+
+      {/* ── Editorial SVG layer — desktop only ── */}
+      <div className="absolute inset-0 hidden md:block" style={{ overflow: "hidden" }}>
+        <svg
+          ref={svgRef}
+          style={{
+            position: "absolute",
+            top: "-5%", left: "-2%",
+            width: "104%", height: "110%",
+            willChange: "transform",
+          }}
+          viewBox="0 0 1440 900"
+          preserveAspectRatio="xMidYMid slice"
+        >
+          {/* ── ENGINEER / DESIGN / BUILD — stroke outline, no fill ── */}
+          <text x="430" y="248"
+            fontFamily="var(--font-geist-sans,'Inter',sans-serif)"
+            fontWeight="900" fontSize="152" letterSpacing="-4"
+            fill="none" stroke="rgba(34,211,238,0.20)" strokeWidth="0.8"
+          >ENGINEER</text>
+          <text x="430" y="420"
+            fontFamily="var(--font-geist-sans,'Inter',sans-serif)"
+            fontWeight="900" fontSize="152" letterSpacing="-4"
+            fill="none" stroke="rgba(34,211,238,0.16)" strokeWidth="0.8"
+          >DESIGN</text>
+          <text x="430" y="592"
+            fontFamily="var(--font-geist-sans,'Inter',sans-serif)"
+            fontWeight="900" fontSize="152" letterSpacing="-4"
+            fill="none" stroke="rgba(34,211,238,0.14)" strokeWidth="0.8"
+          >BUILD</text>
+
+          {/* ── Stack annotations ── */}
+          <g fontFamily="var(--font-geist-mono,'SF Mono',monospace)"
+            fontSize="12" fill="rgba(34,211,238,0.35)" letterSpacing="1.8">
+            <text x="432" y="640">// FULL STACK</text>
+            <text x="432" y="660">// WEB &amp; APP</text>
+            <text x="432" y="680">// OPEN SOURCE</text>
+          </g>
+
+          {/* ── Top-right tagline ── */}
+          <g fontFamily="var(--font-geist-mono,'SF Mono',monospace)"
+            fontSize="10.5" fill="rgba(34,211,238,0.30)" letterSpacing="2.2" textAnchor="end">
+            <text x="1410" y="80">BETTER CODE</text>
+            <text x="1410" y="97">BIGGER DREAMS</text>
+          </g>
+
+          {/* ── Perspective guide lines ── */}
+          <g stroke="rgba(34,211,238,0.07)" strokeWidth="0.5" fill="none">
+            <line x1="1440" y1="450" x2="260" y2="40"  />
+            <line x1="1440" y1="450" x2="160" y2="260" />
+            <line x1="1440" y1="450" x2="160" y2="640" />
+            <line x1="1440" y1="450" x2="260" y2="860" />
+          </g>
+
+          {/* ── Diagonal structural lines ── */}
+          <g stroke="rgba(34,211,238,0.065)" strokeWidth="0.5" fill="none">
+            <line x1="680" y1="0"   x2="1200" y2="900" />
+            <line x1="800" y1="0"   x2="1440" y2="800" />
+          </g>
+
+          {/* ── Horizontal rules ── */}
+          <g stroke="rgba(34,211,238,0.065)" strokeWidth="0.4">
+            <line x1="0"    y1="84"  x2="400"  y2="84"  />
+            <line x1="0"    y1="816" x2="360"  y2="816" />
+            <line x1="1040" y1="36"  x2="1440" y2="36"  />
+          </g>
+
+          {/* ── Crosshair marks ── */}
+          <g stroke="rgba(34,211,238,0.32)" strokeWidth="0.8" fill="none">
+            <line x1="698" y1="430" x2="722" y2="430" />
+            <line x1="710" y1="418" x2="710" y2="442" />
+            <circle cx="710" cy="430" r="5.5" strokeWidth="0.5" />
+            <line x1="1292" y1="122" x2="1312" y2="122" />
+            <line x1="1302" y1="112" x2="1302" y2="132" />
+            <line x1="138"  y1="750" x2="158"  y2="750" />
+            <line x1="148"  y1="740" x2="148"  y2="760" />
+          </g>
+
+          {/* ── Corner brackets ── */}
+          <g stroke="rgba(34,211,238,0.20)" strokeWidth="0.7" fill="none">
+            <polyline points="1392,18 1422,18 1422,48" />
+            <polyline points="18,882  18,852  48,852"  />
+          </g>
+
+          {/* ── Abstract V-monogram ── */}
+          <g stroke="rgba(34,211,238,0.065)" strokeWidth="1.0" fill="none">
+            <polyline points="590,55 760,510 930,55" />
+          </g>
+        </svg>
+      </div>
+    </div>
+  );
+}
 
 // ─── Hero Photo ───────────────────────────────────────────────────────────────
 function HeroPhoto({ src }: { src: string }) {
@@ -62,38 +233,6 @@ function HeroPhoto({ src }: { src: string }) {
   );
 }
 
-// ─── Crescent ─────────────────────────────────────────────────────────────────
-function Crescent() {
-  return (
-    <div className="absolute pointer-events-none select-none z-[2] hidden md:block"
-      style={{ right: "2%", top: "50%", transform: "translateY(-50%)" }}
-      aria-hidden="true"
-    >
-      <svg viewBox="0 0 400 400"
-        className="w-[280px] h-[280px] lg:w-[400px] lg:h-[400px] xl:w-[480px] xl:h-[480px]"
-        xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <radialGradient id="cg1" cx="40%" cy="40%" r="60%">
-            <stop offset="0%" stopColor="#0891b2" stopOpacity="0.22" />
-            <stop offset="100%" stopColor="#083344" stopOpacity="0" />
-          </radialGradient>
-          <filter id="cglow" x="-30%" y="-30%" width="160%" height="160%">
-            <feGaussianBlur stdDeviation="8" result="blur" />
-            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-          </filter>
-          <filter id="csoft"><feGaussianBlur stdDeviation="12" /></filter>
-        </defs>
-        <ellipse cx="210" cy="200" rx="160" ry="155" fill="url(#cg1)" />
-        <path d="M 200,45 A 155,155 0 1 1 200,355 A 108,108 0 1 0 200,45 Z" fill="#04212e" filter="url(#csoft)" opacity="0.55" />
-        <path d="M 200,55 A 145,145 0 1 1 200,345 A 100,100 0 1 0 200,55 Z" fill="#061a25" filter="url(#cglow)" />
-        <path d="M 200,65 A 135,135 0 1 1 200,335 A 92,92 0 1 0 200,65 Z" fill="#0e4858" />
-        <path d="M 200,72 A 128,128 0 1 1 200,328 A 87,87 0 1 0 200,72 Z" fill="#147892" opacity="0.9" />
-        <path d="M 200,80 A 120,120 0 1 1 200,320 A 82,82 0 1 0 200,80 Z" fill="none" stroke="#22d3ee" strokeWidth="1.2" opacity="0.4" />
-      </svg>
-    </div>
-  );
-}
-
 // ─── Role Ticker ──────────────────────────────────────────────────────────────
 function RoleTicker({ roles }: { roles: string[] }) {
   const [index,   setIndex  ] = useState(0);
@@ -132,6 +271,45 @@ function StatPill({ value, label }: { value: string; label: string }) {
   );
 }
 
+// ─── Terminal Label ───────────────────────────────────────────────────────────
+function TerminalLabel() {
+  return (
+    <span className="font-mono text-[10px] text-blood-600 tracking-[0.25em] uppercase mb-1.5 flex items-center gap-0.5">
+      <span className="opacity-60">{">"}</span>
+      <span className="ml-1">init ./portfolio</span>
+      <span
+        className="inline-block w-[1px] h-[10px] bg-blood-500 ml-0.5 align-middle"
+        style={{ animation: "blink-cursor 1s step-end infinite" }}
+      />
+      <style>{`
+        @keyframes blink-cursor {
+          0%, 100% { opacity: 1; }
+          50%       { opacity: 0; }
+        }
+      `}</style>
+    </span>
+  );
+}
+
+// ─── Availability Badge ───────────────────────────────────────────────────────
+function AvailabilityBadge() {
+  return (
+    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm border border-emerald-900/50 bg-emerald-950/30 font-mono text-[9px] tracking-widest uppercase text-emerald-400 mb-2 w-fit">
+      <span
+        className="w-1.5 h-1.5 rounded-full bg-emerald-400"
+        style={{ animation: "pulse-dot 2s ease-in-out infinite" }}
+      />
+      Available
+      <style>{`
+        @keyframes pulse-dot {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50%       { opacity: 0.5; transform: scale(0.8); }
+        }
+      `}</style>
+    </span>
+  );
+}
+
 // ─── Hero Content (shared mobile + desktop) ───────────────────────────────────
 interface HeroContentProps {
   roles:     string[];
@@ -156,7 +334,8 @@ function HeroContent({ roles, nameFirst, nameLast, bio, stats, compact = false }
 
       {/* Name */}
       <div>
-        <p className="font-mono text-[10px] text-blood-600 tracking-[0.3em] uppercase mb-1.5">Creative Portfolio</p>
+        <TerminalLabel />
+        <AvailabilityBadge />
         <h1 className="font-black leading-none tracking-tight">
           <span className={`block text-dark-100 ${sz}`}>{nameFirst}</span>
           <span className={`block font-bold ${sz}`} style={{ color: "var(--hero-name-2)" }}>{nameLast}</span>
@@ -195,11 +374,11 @@ function HeroContent({ roles, nameFirst, nameLast, bio, stats, compact = false }
         {/* CTA */}
         <div className="flex items-center gap-3">
           <Link href="/#projects"
-            className={`rounded-full bg-blood-700 hover:bg-blood-600 text-white font-semibold transition-all hover:scale-105 active:scale-95 ${compact ? "px-4 py-2 text-xs" : "px-5 py-2.5 text-xs"}`}>
+            className={`rounded-sm bg-blood-700 hover:bg-blood-600 text-white font-semibold transition-all hover:scale-105 active:scale-95 ring-1 ring-blood-700/40 hover:ring-blood-500/60 ${compact ? "px-4 py-2 text-xs" : "px-5 py-2.5 text-xs"}`}>
             Lihat Karya →
           </Link>
           <Link href="/#contact"
-            className={`rounded-full border border-dark-700 hover:border-blood-600 text-dark-400 hover:text-blood-400 font-semibold transition-all hover:scale-105 active:scale-95 ${compact ? "px-4 py-2 text-xs" : "px-5 py-2.5 text-xs"}`}>
+            className={`rounded-sm border border-dark-700 hover:border-blood-600 text-dark-400 hover:text-blood-400 font-semibold transition-all hover:scale-105 active:scale-95 ${compact ? "px-4 py-2 text-xs" : "px-5 py-2.5 text-xs"}`}>
             Kontak
           </Link>
         </div>
@@ -243,6 +422,9 @@ export function HeroSection({ heroImageUrl, roles = [], nameFirst = "REAVLENIA",
       className="sticky top-0 overflow-hidden animated-gradient-bg w-full max-w-full"
       style={{ zIndex: 1, height: "100vh" }}
     >
+      {/* ── Hero Background ── */}
+      <HeroBg />
+
       {/* Dark/light overlay left — readability */}
       <div className="absolute hidden md:block z-[3] pointer-events-none"
         style={{
@@ -251,14 +433,6 @@ export function HeroSection({ heroImageUrl, roles = [], nameFirst = "REAVLENIA",
         }}
         aria-hidden="true"
       />
-
-      {/* Error code scroll */}
-      <div className="hidden md:block">
-        <ErrorCodeScroll side="right" />
-      </div>
-
-      {/* Crescent */}
-      <Crescent />
 
       {/* ═══ MOBILE ═══ */}
       <div className="md:hidden flex flex-col h-full overflow-y-auto px-5 pb-20 pt-16 gap-4">

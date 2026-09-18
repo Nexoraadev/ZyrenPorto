@@ -18,15 +18,20 @@ interface ChatMessage {
 }
 
 function clampPos(x: number, y: number) {
+  // On mobile, reserve space above bottom nav (64px) + safe padding
+  const bottomReserve = window.innerWidth < 768 ? 64 + 16 : SAFE_PADDING;
   return {
     x: Math.max(SAFE_PADDING, Math.min(window.innerWidth  - BALL_SIZE - SAFE_PADDING, x)),
-    y: Math.max(SAFE_PADDING, Math.min(window.innerHeight - BALL_SIZE - SAFE_PADDING, y)),
+    y: Math.max(SAFE_PADDING, Math.min(window.innerHeight - BALL_SIZE - bottomReserve, y)),
   };
 }
 function defaultPos() {
+  // Chat button sits just above the bottom nav on mobile
+  // On desktop keep original behaviour
+  const bottomOffset = window.innerWidth < 768 ? 64 + 16 : 20;
   return clampPos(
     window.innerWidth  - BALL_SIZE - 20,
-    window.innerHeight - BALL_SIZE - 145,
+    window.innerHeight - BALL_SIZE - bottomOffset,
   );
 }
 
@@ -235,8 +240,11 @@ export function ChatBot() {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      const p = saved ? JSON.parse(saved) : defaultPos();
+      // Always use fresh defaultPos — ignore stale saved position
+      // so repositioning fixes take effect immediately without requiring
+      // the user to clear localStorage manually.
+      localStorage.removeItem(STORAGE_KEY);
+      const p = defaultPos();
       const c = clampPos(p.x, p.y);
       setPos(c); posRef.current = c;
     } catch {

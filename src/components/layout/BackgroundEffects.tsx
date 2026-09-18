@@ -1,308 +1,245 @@
-  "use client";
+"use client";
 
-  import { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
-  // ─── 1. Aurora Blobs (opacity turun dari sebelumnya) ─────────────────────────
-  function AuroraBlobs() {
-    return (
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden hidden md:block" aria-hidden="true">
-        <div className="absolute rounded-full blur-[130px]"
-          style={{
-            width:"min(550px,80vw)",height:"min(550px,80vw)",opacity:0.09,
-            background:"radial-gradient(circle,#0e7490 0%,#083344 60%,transparent 100%)",
-            top:"-80px",left:"-80px",
-            animation:"blob1 20s ease-in-out infinite",
-          }}
-        />
-        <div className="absolute rounded-full blur-[150px]"
-          style={{
-            width:"min(650px,90vw)",height:"min(650px,90vw)",opacity:0.07,
-            background:"radial-gradient(circle,#0891b2 0%,#083344 55%,transparent 100%)",
-            bottom:"-120px",right:"-120px",
-            animation:"blob2 26s ease-in-out infinite",
-          }}
-        />
-        <style>{`
-          @keyframes blob1{0%,100%{transform:translate(0,0) scale(1)}
-            33%{transform:translate(70px,50px) scale(1.06)}
-            66%{transform:translate(-30px,100px) scale(0.96)}}
-          @keyframes blob2{0%,100%{transform:translate(0,0) scale(1)}
-            40%{transform:translate(-80px,-60px) scale(1.08)}
-            70%{transform:translate(-40px,-100px) scale(0.94)}}
-        `}</style>
-      </div>
-    );
-  }
+// ─── 1. Portrait Radial Glow — strong cyan behind photo ──────────────────────
+function PortraitGlow() {
+  const glowRef = useRef<HTMLDivElement>(null);
+  const posRef  = useRef({ x: 68, y: 52 });
+  const curRef  = useRef({ x: 68, y: 52 });
+  const rafRef  = useRef<number>(0);
 
-  // ─── 2. Starfield — cyan + grey particles ─────────────────────────────────────
-  function Starfield() {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-
-    useEffect(() => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-
-      // Skip on mobile for performance
-      const isMobile = window.innerWidth < 768;
-      if (isMobile) return;
-
-      const W = () => window.innerWidth;
-      const H = () => window.innerHeight;
-      canvas.width  = W();
-      canvas.height = H();
-
-      const resize = () => { canvas.width = W(); canvas.height = H(); init(); };
-      window.addEventListener("resize", resize);
-
-      interface Star {
-        x: number; y: number;
-        size: number; opacity: number;
-        vx: number; vy: number;
-        color: string;
-        twinkleSpeed: number;
-        twinkleOffset: number;
-      }
-
-      let stars: Star[] = [];
-      let scrollY = 0;
-
-      const COLORS = [
-        "rgba(34,211,238,",
-        "rgba(6,182,212,",
-        "rgba(100,116,139,",
-        "rgba(148,163,184,",
-        "rgba(45,212,191,",
-      ];
-
-      function init() {
-        // Use far fewer stars for better performance
-        const count = Math.floor((W() * H()) / 9000);
-        stars = Array.from({ length: count }, () => ({
-          x:             Math.random() * W(),
-          y:             Math.random() * H(),
-          size:          0.4 + Math.random() * 1.4,
-          opacity:       0.15 + Math.random() * 0.45,
-          vx:            (Math.random() - 0.5) * 0.1,
-          vy:            (Math.random() - 0.5) * 0.07,
-          color:         COLORS[Math.floor(Math.random() * COLORS.length)],
-          twinkleSpeed:  0.008 + Math.random() * 0.012,
-          twinkleOffset: Math.random() * Math.PI * 2,
-        }));
-      }
-
-      init();
-
-      let t = 0;
-      let rafId: number;
-      let lastRaf = 0;
-      const onScroll = () => { scrollY = window.scrollY; };
-      window.addEventListener("scroll", onScroll, { passive: true });
-
-      function draw(now: number) {
-        // Throttle to ~30fps on desktop for lower CPU usage
-        if (now - lastRaf < 33) { rafId = requestAnimationFrame(draw); return; }
-        lastRaf = now;
-
-        ctx!.clearRect(0, 0, canvas!.width, canvas!.height);
-        t += 0.01;
-
-        const scrollBoost = Math.min(scrollY * 0.0003, 0.5);
-
-        for (const s of stars) {
-          s.x += s.vx * (1 + scrollBoost * 3);
-          s.y += s.vy * (1 + scrollBoost * 2);
-
-          if (s.x < -2)                s.x = canvas!.width  + 2;
-          if (s.x > canvas!.width  + 2) s.x = -2;
-          if (s.y < -2)                s.y = canvas!.height + 2;
-          if (s.y > canvas!.height + 2) s.y = -2;
-
-          const twinkle = 0.7 + 0.3 * Math.sin(t * s.twinkleSpeed * 80 + s.twinkleOffset);
-          const alpha   = s.opacity * twinkle;
-
-          ctx!.beginPath();
-          ctx!.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-          ctx!.fillStyle = s.color + alpha + ")";
-          ctx!.fill();
-
-          // Only large stars get glow
-          if (s.size > 1.2) {
-            const g = ctx!.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.size * 3);
-            g.addColorStop(0, s.color + (alpha * 0.4) + ")");
-            g.addColorStop(1, s.color + "0)");
-            ctx!.beginPath();
-            ctx!.arc(s.x, s.y, s.size * 3, 0, Math.PI * 2);
-            ctx!.fillStyle = g;
-            ctx!.fill();
-          }
-        }
-
-        rafId = requestAnimationFrame(draw);
-      }
-      rafId = requestAnimationFrame(draw);
-
-      return () => {
-        window.removeEventListener("resize", resize);
-        window.removeEventListener("scroll", onScroll);
-        cancelAnimationFrame(rafId);
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      posRef.current = {
+        x: 50 + (e.clientX / window.innerWidth  - 0.5) * 30,
+        y: 40 + (e.clientY / window.innerHeight - 0.5) * 25,
       };
-    }, []);
+    };
+    window.addEventListener("mousemove", onMove, { passive: true });
 
-    return (
-      <canvas
-        ref={canvasRef}
-        className="fixed inset-0 z-0 pointer-events-none hidden md:block"
-        style={{ opacity: 0.85, mixBlendMode: "screen" as React.CSSProperties["mixBlendMode"] }}
-        aria-hidden="true"
-      />
-    );
-  }
+    const animate = () => {
+      curRef.current.x += (posRef.current.x - curRef.current.x) * 0.015;
+      curRef.current.y += (posRef.current.y - curRef.current.y) * 0.015;
+      if (glowRef.current) {
+        glowRef.current.style.background = [
+          `radial-gradient(ellipse 60% 65% at ${curRef.current.x}% ${curRef.current.y}%,`,
+          `  rgba(6,182,212,0.28) 0%,`,
+          `  rgba(8,145,178,0.18) 25%,`,
+          `  rgba(14,116,144,0.09) 50%,`,
+          `  transparent 72%`,
+          `)`,
+        ].join("");
+      }
+      rafRef.current = requestAnimationFrame(animate);
+    };
+    rafRef.current = requestAnimationFrame(animate);
 
-  // ─── 3. Noise / Grain Texture overlay ────────────────────────────────────────
-  function NoiseTexture() {
-    return (
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
+
+  return (
+    <>
+      {/* Tracked primary glow */}
       <div
-        className="fixed inset-0 z-[1] pointer-events-none"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
-          opacity: 0.025,
-          mixBlendMode: "overlay" as React.CSSProperties["mixBlendMode"],
-        }}
+        ref={glowRef}
+        className="fixed inset-0 z-0 pointer-events-none"
         aria-hidden="true"
+        style={{
+          background: "radial-gradient(ellipse 60% 65% at 68% 52%, rgba(6,182,212,0.28) 0%, rgba(8,145,178,0.18) 25%, rgba(14,116,144,0.09) 50%, transparent 72%)",
+        }}
       />
-    );
-  }
+      {/* Depth layer — always fixed right */}
+      <div
+        className="fixed inset-0 z-0 pointer-events-none"
+        aria-hidden="true"
+        style={{
+          background: "radial-gradient(ellipse 45% 55% at 82% 58%, rgba(8,145,178,0.14) 0%, transparent 60%)",
+        }}
+      />
+      {/* Left side darkening — keeps text readable */}
+      <div
+        className="fixed inset-0 z-0 pointer-events-none"
+        aria-hidden="true"
+        style={{
+          background: "linear-gradient(to right, rgba(4,8,13,0.55) 0%, rgba(4,8,13,0.2) 38%, transparent 55%)",
+        }}
+      />
+    </>
+  );
+}
 
-  // ─── 4. Blood Crack Trail (cursor) ────────────────────────────────────────────
-  interface Branch {
-    points: { x: number; y: number }[];
-    width: number;
-  }
-  interface CrackSystem {
-    x: number; y: number;
-    branches: Branch[];
-    life: number;
-  }
+// ─── 2. Hero Editorial Layer — SVG with parallax ─────────────────────────────
+function EditorialLayer() {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const rafRef  = useRef<number>(0);
+  const posRef  = useRef({ x: 0, y: 0 });
+  const curRef  = useRef({ x: 0, y: 0 });
 
-  function genCrack(sx: number, sy: number, angle: number, len: number, depth: number): Branch[] {
-    const branches: Branch[] = [];
-    const pts: { x: number; y: number }[] = [{ x: sx, y: sy }];
-    let x = sx, y = sy, a = angle;
-    const seg = 9 + Math.random() * 11;
-    const n   = Math.floor(len / seg);
-    for (let i = 0; i < n; i++) {
-      a += (Math.random() - 0.5) * 0.65;
-      x += Math.cos(a) * seg;
-      y += Math.sin(a) * seg;
-      pts.push({ x, y });
-      if (depth > 0 && Math.random() < 0.3) {
-        const ba = a + (Math.random() - 0.5) * 1.8;
-        branches.push(...genCrack(x, y, ba, len * 0.45, depth - 1));
+  useEffect(() => {
+    // Skip parallax on mobile
+    if (window.innerWidth < 768) return;
+
+    const onMove = (e: MouseEvent) => {
+      posRef.current = {
+        x: (e.clientX / window.innerWidth  - 0.5) * 24,
+        y: (e.clientY / window.innerHeight - 0.5) * 14,
+      };
+    };
+    window.addEventListener("mousemove", onMove, { passive: true });
+
+    const animate = () => {
+      curRef.current.x += (posRef.current.x - curRef.current.x) * 0.035;
+      curRef.current.y += (posRef.current.y - curRef.current.y) * 0.035;
+      if (wrapRef.current) {
+        wrapRef.current.style.transform =
+          `translate(${curRef.current.x * 0.4}px, ${curRef.current.y * 0.4}px)`;
       }
-    }
-    branches.unshift({ points: pts, width: 1.4 - depth * 0.35 });
-    return branches;
-  }
+      rafRef.current = requestAnimationFrame(animate);
+    };
+    rafRef.current = requestAnimationFrame(animate);
 
-  function BloodCrackTrail() {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
 
-    useEffect(() => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
+  return (
+    <div
+      className="fixed inset-0 z-0 pointer-events-none overflow-hidden"
+      aria-hidden="true"
+    >
+      <div
+        ref={wrapRef}
+        style={{ position: "absolute", inset: "-5%", willChange: "transform" }}
+      >
+        <svg
+          width="110%"
+          height="110%"
+          viewBox="0 0 1440 900"
+          preserveAspectRatio="xMidYMid slice"
+        >
+          {/* ── ENGINEER DESIGN BUILD — large stacked editorial text ── */}
+          <text x="480" y="230"
+            fontFamily="var(--font-geist-sans, 'Inter', sans-serif)"
+            fontWeight="900" fontSize="148" letterSpacing="-4"
+            fill="rgba(10,22,35,0.0)" stroke="rgba(34,211,238,0.22)"
+            strokeWidth="0.8" paintOrder="stroke"
+          >ENGINEER</text>
+          <text x="480" y="390"
+            fontFamily="var(--font-geist-sans, 'Inter', sans-serif)"
+            fontWeight="900" fontSize="148" letterSpacing="-4"
+            fill="rgba(10,22,35,0.0)" stroke="rgba(34,211,238,0.18)"
+            strokeWidth="0.8" paintOrder="stroke"
+          >DESIGN</text>
+          <text x="480" y="550"
+            fontFamily="var(--font-geist-sans, 'Inter', sans-serif)"
+            fontWeight="900" fontSize="148" letterSpacing="-4"
+            fill="rgba(10,22,35,0.0)" stroke="rgba(34,211,238,0.16)"
+            strokeWidth="0.8" paintOrder="stroke"
+          >BUILD</text>
 
-      // Disable on touch/mobile devices — saves main-thread significantly
-      const isTouchOnly = !window.matchMedia("(hover: hover)").matches;
-      if (isTouchOnly) return;
+          {/* ── Stack list — // FULL STACK etc ── */}
+          <g
+            fontFamily="var(--font-geist-mono, 'SF Mono', monospace)"
+            fontSize="13" fill="rgba(34, 211, 238, 0.39)" letterSpacing="1.5"
+          >
+            <text x="482" y="610">// FULL STACK</text>
+            <text x="482" y="632">// WEB &amp; APP</text>
+            <text x="482" y="654">// OPEN SOURCE</text>
+            <text x="482" y="676">// 2026 —</text>
+          </g>
 
-      canvas.width  = window.innerWidth;
-      canvas.height = window.innerHeight;
-      const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
-      window.addEventListener("resize", resize);
+          {/* ── Top-right small tagline ── */}
+          <g
+            fontFamily="var(--font-geist-mono, 'SF Mono', monospace)"
+            fontSize="11" fill="rgba(34, 211, 238, 0.39)" letterSpacing="2"
+            textAnchor="end"
+          >
+            <text x="1400" y="55">BETTER CODE</text>
+            <text x="1400" y="72">BIGGER DREAMS</text>
+          </g>
 
-      const cracks: CrackSystem[] = [];
-      let lastX = -999, lastY = -999, rafId: number;
+          {/* ── Geometric construction lines ── */}
+          {/* Perspective guides — converge right */}
+          <g stroke="rgba(34,211,238,0.08)" strokeWidth="0.6" fill="none">
+            <line x1="1440" y1="450" x2="300"  y2="50"  />
+            <line x1="1440" y1="450" x2="200"  y2="250" />
+            <line x1="1440" y1="450" x2="200"  y2="650" />
+            <line x1="1440" y1="450" x2="300"  y2="850" />
+          </g>
 
-      const spawn = (x: number, y: number) => {
-        if (Math.hypot(x - lastX, y - lastY) < 20) return;
-        lastX = x; lastY = y;
-        for (let i = 0; i < 2 + Math.floor(Math.random() * 2); i++) {
-          const a = Math.atan2(y - lastY, x - lastX) + (Math.random() - 0.5) * 2.8;
-          cracks.push({ x, y, branches: genCrack(x, y, a, 35 + Math.random() * 45, 2), life: 1 });
-        }
-        if (cracks.length > 35) cracks.splice(0, cracks.length - 35);
-      };
+          {/* Diagonal structural lines */}
+          <g stroke="rgba(34,211,238,0.07)" strokeWidth="0.5" fill="none">
+            <line x1="650"  y1="0"   x2="1180" y2="900" />
+            <line x1="780"  y1="0"   x2="1440" y2="820" />
+          </g>
 
-      const onMove  = (e: MouseEvent) => spawn(e.clientX, e.clientY);
-      const onTouch = (e: TouchEvent) => { const t = e.touches[0]; if (t) spawn(t.clientX, t.clientY); };
-      window.addEventListener("mousemove", onMove);
-      window.addEventListener("touchmove", onTouch);
+          {/* Horizontal structural rules */}
+          <g stroke="rgba(34,211,238,0.07)" strokeWidth="0.4">
+            <line x1="0"    y1="88"  x2="420"  y2="88"  />
+            <line x1="0"    y1="812" x2="380"  y2="812" />
+            <line x1="1020" y1="40"  x2="1440" y2="40"  />
+            <line x1="1080" y1="860" x2="1440" y2="860" />
+          </g>
 
-      const drawBranch = (b: Branch, a: number) => {
-        if (b.points.length < 2) return;
-        // glow
-        ctx.save();
-        ctx.shadowBlur  = 7;
-        ctx.shadowColor = `rgba(34,211,238,${a*0.35})`;
-        ctx.strokeStyle = `rgba(8,145,178,${a*0.55})`;
-        ctx.lineWidth   = b.width + 0.8;
-        ctx.lineCap     = "round";
-        ctx.beginPath();
-        ctx.moveTo(b.points[0].x, b.points[0].y);
-        b.points.slice(1).forEach((p) => ctx.lineTo(p.x, p.y));
-        ctx.stroke();
-        ctx.restore();
-        // core
-        ctx.save();
-        ctx.strokeStyle = `rgba(94,234,212,${a*0.8})`;
-        ctx.lineWidth   = b.width * 0.45;
-        ctx.lineCap     = "round";
-        ctx.beginPath();
-        ctx.moveTo(b.points[0].x, b.points[0].y);
-        b.points.slice(1).forEach((p) => ctx.lineTo(p.x, p.y));
-        ctx.stroke();
-        ctx.restore();
-      };
+          {/* ── Crosshair / registration marks ── */}
+          <g stroke="rgba(34,211,238,0.28)" strokeWidth="0.8" fill="none">
+            {/* center-field mark */}
+            <line x1="700" y1="420" x2="726" y2="420" />
+            <line x1="713" y1="407" x2="713" y2="433" />
+            <circle cx="713" cy="420" r="6" strokeWidth="0.5" />
+            {/* top-right */}
+            <line x1="1288" y1="118" x2="1308" y2="118" />
+            <line x1="1298" y1="108" x2="1298" y2="128" />
+            {/* bottom-left */}
+            <line x1="132" y1="748" x2="152"  y2="748" />
+            <line x1="142" y1="738" x2="142"  y2="758" />
+          </g>
 
-      const animate = () => {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (let i = cracks.length - 1; i >= 0; i--) {
-          const c = cracks[i];
-          c.life -= 0.016;
-          if (c.life <= 0) { cracks.splice(i, 1); continue; }
-          c.branches.forEach((b) => drawBranch(b, c.life));
-          ctx.beginPath();
-          ctx.arc(c.x, c.y, 1.8, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(34,211,238,${c.life*0.7})`;
-          ctx.fill();
-        }
-        rafId = requestAnimationFrame(animate);
-      };
-      animate();
+          {/* Corner brackets */}
+          <g stroke="rgba(34,211,238,0.18)" strokeWidth="0.7" fill="none">
+            <polyline points="1390,22 1420,22 1420,52" />
+            <polyline points="22,878  22,848  52,848"  />
+          </g>
 
-      return () => {
-        window.removeEventListener("resize", resize);
-        window.removeEventListener("mousemove", onMove);
-        window.removeEventListener("touchmove", onTouch);
-        cancelAnimationFrame(rafId);
-      };
-    }, []);
+          {/* ── Abstract V-shape / monogram ── */}
+          <g stroke="rgba(34,211,238,0.07)" strokeWidth="1.2" fill="none">
+            <polyline points="580,60 760,500 940,60" />
+            <polyline points="620,60 760,440 900,60" />
+          </g>
+        </svg>
+      </div>
+    </div>
+  );
+}
 
-    return <canvas ref={canvasRef} className="fixed inset-0 z-[2] pointer-events-none" aria-hidden="true" />;
-  }
+// ─── 3. Film Grain ────────────────────────────────────────────────────────────
+function FilmGrain() {
+  return (
+    <div
+      className="fixed inset-0 z-[1] pointer-events-none"
+      aria-hidden="true"
+      style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
+        opacity: 0.04,
+        mixBlendMode: "overlay" as React.CSSProperties["mixBlendMode"],
+      }}
+    />
+  );
+}
 
-  // ─── Export ───────────────────────────────────────────────────────────────────
-  export function BackgroundEffects() {
-    return (
-      <>
-        <AuroraBlobs />
-        <Starfield />
-        <NoiseTexture />
-        <BloodCrackTrail />
-      </>
-    );
-  }
+// ─── Export ───────────────────────────────────────────────────────────────────
+export function BackgroundEffects() {
+  return (
+    <>
+      <PortraitGlow />
+      <EditorialLayer />
+      <FilmGrain />
+    </>
+  );
+}

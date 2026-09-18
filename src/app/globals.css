@@ -128,22 +128,13 @@ header, footer { position: relative; z-index: 50; }
     border-color: var(--border) !important;
   }
 
-  /* Animated gradient hero background */
+  /* Hero base — light mode */
   & .animated-gradient-bg {
-    background: linear-gradient(
-      135deg,
-      #f5ede9 0%, #f0e0d8 20%,
-      #f5ede9 40%, #ecddd6 60%,
-      #f5ede9 80%, #f0e0d8 100%
-    ) !important;
-    background-size: 400% 400% !important;
+    background: #f0e8e4 !important;
   }
 
-  /* Aurora blobs — lighter tint */
-  & .blur-\[130px\], & .blur-\[150px\] { opacity: 0.04 !important; }
-
-  /* Starfield canvas — lighter */
-  & canvas { opacity: 0.25 !important; }
+  /* Dot grid accent — reduce further in light mode */
+  & .dot-grid-pattern { opacity: 0.04 !important; }
 
   /* Navbar */
   & header { border-color: var(--border) !important; }
@@ -168,22 +159,9 @@ header, footer { position: relative; z-index: 50; }
   }
 }
 
-/* ── Animated gradient ── */
-@keyframes gradientShift {
-  0%   { background-position: 0% 50%;   }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%;   }
-}
-
+/* ── Hero base background ── */
 .animated-gradient-bg {
-  background: linear-gradient(
-    135deg,
-    #050B10 0%, #081828 25%,
-    #050B10 50%, #0a1e32 75%,
-    #050B10 100%
-  );
-  background-size: 400% 400%;
-  animation: gradientShift 12s ease infinite;
+  background: #030709;
 }
 
 /* ── Performance: defer rendering of offscreen sections ── */
@@ -204,9 +182,6 @@ a, button, [role="button"] {
 
 /* ── Reduce animation on low-end devices (prefers-reduced-motion) ── */
 @media (prefers-reduced-motion: reduce) {
-  .animated-gradient-bg {
-    animation: none;
-  }
   * {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;

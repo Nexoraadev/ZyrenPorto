@@ -175,6 +175,7 @@ export interface Database {
           level: number;
           icon: string | null;
           icon_size: number | null;
+          description: string | null;
           order_index: number;
         };
         Insert: {
@@ -184,6 +185,7 @@ export interface Database {
           level?: number;
           icon?: string | null;
           icon_size?: number | null;
+          description?: string | null;
           order_index?: number;
         };
         Update: {
@@ -193,6 +195,7 @@ export interface Database {
           level?: number;
           icon?: string | null;
           icon_size?: number | null;
+          description?: string | null;
           order_index?: number;
         };
       };

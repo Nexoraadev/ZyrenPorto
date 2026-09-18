@@ -107,6 +107,8 @@ CREATE TABLE IF NOT EXISTS public.skills (
   category    TEXT NOT NULL,
   level       INTEGER DEFAULT 80 CHECK (level >= 0 AND level <= 100),
   icon        TEXT,
+  icon_size   INTEGER DEFAULT 70,
+  description TEXT,
   order_index INTEGER DEFAULT 0
 );
 
