@@ -372,13 +372,13 @@ export function ContentEditor({ initialSettings }: ContentEditorProps) {
                 {i === 0 && <label className={labelCls}>Angka / Value</label>}
                 <input value={st.value}
                   onChange={e => setStats(prev => prev.map((v, idx) => idx === i ? { ...v, value: e.target.value } : v))}
-                  className={inputCls} placeholder='mis: "10+" atau "3 Tahun"' />
+                  className={inputCls} placeholder='mis: &quot;10+&quot; atau &quot;3 Tahun&quot;' />
               </div>
               <div className="flex-1">
                 {i === 0 && <label className={labelCls}>Label / Keterangan</label>}
                 <input value={st.label}
                   onChange={e => setStats(prev => prev.map((v, idx) => idx === i ? { ...v, label: e.target.value } : v))}
-                  className={inputCls} placeholder='mis: "Projects", "Years", "Skills"' />
+                  className={inputCls} placeholder='mis: &quot;Projects&quot;, &quot;Years&quot;, &quot;Skills&quot;' />
               </div>
               <button type="button" onClick={() => setStats(prev => prev.filter((_, idx) => idx !== i))}
                 className="text-dark-600 hover:text-blood-400 p-2 rounded hover:bg-blood-950/50 transition-colors mb-0.5">
@@ -443,13 +443,13 @@ export function ContentEditor({ initialSettings }: ContentEditorProps) {
                 {i === 0 && <label className={labelCls}>Angka / Value</label>}
                 <input value={st.value}
                   onChange={e => setAboutStats(prev => prev.map((v, idx) => idx === i ? { ...v, value: e.target.value } : v))}
-                  className={inputCls} placeholder='mis: "15+" atau "5 Tools"' />
+                  className={inputCls} placeholder='mis: &quot;15+&quot; atau &quot;5 Tools&quot;' />
               </div>
               <div className="flex-1">
                 {i === 0 && <label className={labelCls}>Label / Keterangan</label>}
                 <input value={st.label}
                   onChange={e => setAboutStats(prev => prev.map((v, idx) => idx === i ? { ...v, label: e.target.value } : v))}
-                  className={inputCls} placeholder='mis: "Technologies", "Design Tools"' />
+                  className={inputCls} placeholder='mis: &quot;Technologies&quot;, &quot;Design Tools&quot;' />
               </div>
               <button type="button" onClick={() => setAboutStats(prev => prev.filter((_, idx) => idx !== i))}
                 className="text-dark-600 hover:text-blood-400 p-2 rounded hover:bg-blood-950/50 transition-colors mb-0.5">
@@ -564,7 +564,7 @@ export function ContentEditor({ initialSettings }: ContentEditorProps) {
           <input value={profileEnv} onChange={e => setProfileEnv(e.target.value)}
             className={inputCls} placeholder="VS Code · Figma · Adobe CC" />
           <p className="text-[10px] text-dark-600 font-mono mt-1">
-            Pisahkan dengan " · " (space dot space) untuk multi item
+            Pisahkan dengan <code className="font-mono">&quot; · &quot;</code> (space dot space) untuk multi item
           </p>
         </div>
       </Section>

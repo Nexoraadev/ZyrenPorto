@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
         subject: "✅ Test Email — Portfolio Notification",
         html: `
           <div style="font-family:sans-serif;max-width:500px;margin:0 auto;padding:24px;background:#0a0a0a;color:#e8e8e8;border-radius:12px;border:1px solid #222">
-            <h2 style="color:#c81c1c">Test Berhasil! ✅</h2>
+            <h2 style="color:#0891b2">Test Berhasil! ✅</h2>
             <p>Email notifikasi dari <strong>zhiyyporto.vercel.app</strong> berfungsi dengan baik.</p>
             <p style="color:#888;font-size:13px">Pesan ini dikirim sebagai test dari dashboard admin.</p>
           </div>

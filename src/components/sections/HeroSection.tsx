@@ -232,7 +232,7 @@ interface HeroSectionProps {
   stats?:        { value: string; label: string }[];
 }
 
-const FALLBACK_IMAGE = "https://zljhjdhknybktcvtdutz.supabase.co/storage/v1/object/public/hero/ab9e4d158163df3ee068613735669b04-removebg-preview.png";
+const FALLBACK_IMAGE = "https://uskpxggqqfqidyrroobx.supabase.co/storage/v1/object/public/portfolio-assets/hero/1789625657620-nobg-k1pjb2prcff.png";
 
 export function HeroSection({ heroImageUrl, roles = [], nameFirst = "REAVLENIA", nameLast = "AREZHA", bio = "", stats = [] }: HeroSectionProps) {
   const imageUrl = heroImageUrl || FALLBACK_IMAGE;

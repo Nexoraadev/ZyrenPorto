@@ -316,7 +316,7 @@ export function CertificatesManager({ initialCerts }: CertificatesManagerProps) 
                     ) : file ? (
                       <div className="flex items-center gap-3 text-dark-400">
                         {file.type === "application/pdf" ? (
-                          <FileText size={28} className="text-red-400" />
+                          <FileText size={28} className="text-blood-400" />
                         ) : (
                           <File size={28} className="text-dark-500" />
                         )}
@@ -431,7 +431,7 @@ export function CertificatesManager({ initialCerts }: CertificatesManagerProps) 
                 )}
                 {hasFile && cert.file_type === "pdf" && (
                   <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-dark-800/60 border border-dark-700">
-                    <FileText size={14} className="text-red-400 flex-shrink-0" />
+                    <FileText size={14} className="text-blood-400 flex-shrink-0" />
                     <span className="text-xs font-mono text-dark-300 truncate">PDF tersimpan</span>
                   </div>
                 )}

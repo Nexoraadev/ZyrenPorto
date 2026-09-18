@@ -34,7 +34,7 @@
     );
   }
 
-  // ─── 2. Starfield — red-dark + grey particles ─────────────────────────────────
+  // ─── 2. Starfield — cyan + grey particles ─────────────────────────────────────
   function Starfield() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
 

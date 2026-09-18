@@ -366,7 +366,8 @@ function BentoCard({
               </div>
             ) : (
               <span className="text-[11px] font-mono" style={{ color: "var(--text-muted)" }}>
-                // private repo
+                {/* private repo */}
+                private repo
               </span>
             )}
 

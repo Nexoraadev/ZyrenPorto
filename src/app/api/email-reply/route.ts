@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
       subject: `Re: Pesan dari Portfolio`,
       html: `
         <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#0a0a0a;color:#e8e8e8;border-radius:12px;border:1px solid #222">
-          <h2 style="color:#c81c1c;margin-bottom:4px">Balasan dari Zyrenn</h2>
+          <h2 style="color:#0891b2;margin-bottom:4px">Balasan dari Zyrenn</h2>
           <p style="color:#666;font-size:13px;margin-top:0">zhiyyporto.vercel.app</p>
           <hr style="border:none;border-top:1px solid #222;margin:20px 0"/>
           <p style="color:#888;font-size:13px;margin-bottom:8px">Hei ${toName},</p>

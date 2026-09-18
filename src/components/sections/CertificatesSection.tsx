@@ -235,7 +235,7 @@ function TimelineEntry({ cert, index }: { cert: Certificate; index: number }) {
               <div className="h-32 sm:h-full min-h-[112px] flex flex-col items-center justify-center p-3">
                 {hasFile && cert.file_url && !isImageFile ? (
                   cert.file_type === "pdf"
-                    ? <FileText size={30} className="mb-1.5" style={{ color: "#ef4444", opacity: 0.6 }} />
+                    ? <FileText size={30} className="mb-1.5 text-blood-400 opacity-60" />
                     : <File size={30} className="mb-1.5" style={{ color: "var(--text-muted)" }} />
                 ) : (
                   <Award size={34} className="mb-1.5" style={{ color: meta.accent, opacity: 0.8 }} />

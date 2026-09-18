@@ -105,8 +105,8 @@ export function AnalyticsChart({ data, availableYears, totalViews }: AnalyticsCh
                     height: `${heightPct}%`,
                     background: count > 0
                       ? isCurrentMonth
-                        ? "linear-gradient(to top, #991b1b, #ef4444)"
-                        : "linear-gradient(to top, #7f1d1d, #c81c1c)"
+                        ? "linear-gradient(to top, #0891b2, #22d3ee)"
+                        : "linear-gradient(to top, #155e75, #06b6d4)"
                       : "#1a1a1a",
                     opacity: isCurrentMonth ? 1 : 0.8,
                   }}
