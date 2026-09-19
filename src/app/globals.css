@@ -165,13 +165,18 @@ header, footer { position: relative; z-index: 50; }
 }
 
 /* ── Performance: defer rendering of offscreen sections ── */
-#about,
 #skills,
 #certificates,
-#projects,
 #contact {
   content-visibility: auto;
-  contain-intrinsic-size: 0 600px;
+  contain-intrinsic-size: 0 800px;
+}
+
+/* Projects dan About tidak pakai content-visibility karena posisinya
+   dekat dengan viewport awal dan menyebabkan layout shift / gap */
+#projects,
+#about {
+  content-visibility: visible;
 }
 
 /* ── Mobile touch performance ── */

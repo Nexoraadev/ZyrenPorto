@@ -85,24 +85,24 @@ export function AboutSection({ paragraphs, aboutStats, traits, profile }: AboutS
           </h2>
         </GlitchReveal>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
           {/* LEFT: Profile & stats */}
-          <GlitchReveal className="lg:col-span-3" delay={100}>
+          <GlitchReveal delay={100}>
             <div
-              className="rounded-lg border p-6 sm:p-8"
+              className="rounded-lg border p-6 h-full flex flex-col"
               style={{ borderColor: "var(--border)", background: "var(--bg-card)" }}
             >
               <p
-                className="font-mono text-[10px] tracking-[0.25em] uppercase mb-6"
+                className="font-mono text-[10px] tracking-[0.25em] uppercase mb-5"
                 style={{ color: "var(--text-muted)" }}
               >
-                Profile
+                
               </p>
 
-              <dl className="space-y-4">
-                <ProfileField icon={User}      label="Name"     value={userName} emphasis />
-                <ProfileField icon={Briefcase} label="Role"     value={p.role} />
-                <ProfileField icon={MapPin}    label="Location" value={p.location} />
+              <dl className="space-y-3 flex-1">
+                <ProfileField icon={User}      label="Name"        value={userName} emphasis />
+                <ProfileField icon={Briefcase} label="Role"        value={p.role} />
+                <ProfileField icon={MapPin}    label="Location"    value={p.location} />
                 <ProfileField
                   icon={Chip}
                   label="Status"
@@ -116,23 +116,21 @@ export function AboutSection({ paragraphs, aboutStats, traits, profile }: AboutS
                 <ProfileField icon={Monitor} label="Environment" value={p.env} />
               </dl>
 
-              <div className="mt-8 pt-8 border-t" style={{ borderColor: "var(--border)" }}>
+              <div className="mt-6 pt-6 border-t" style={{ borderColor: "var(--border)" }}>
                 <p
-                  className="font-mono text-[10px] tracking-[0.25em] uppercase mb-5"
+                  className="font-mono text-[10px] tracking-[0.25em] uppercase mb-4"
                   style={{ color: "var(--text-muted)" }}
                 >
-                  Statistics
+                 
                 </p>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
-                  {displayStats.map(({ value, label }) => (
+                <div className="flex gap-8">
+                  {displayStats.slice(0, 3).map(({ value, label }) => (
                     <div key={label} className="min-w-0">
-                      <div
-                        className="text-2xl sm:text-3xl font-black leading-none tracking-tight text-gradient-blood"
-                      >
+                      <div className="text-2xl font-black leading-none tracking-tight text-gradient-blood">
                         {value}
                       </div>
                       <div
-                        className="mt-1.5 text-[10px] tracking-[0.2em] uppercase"
+                        className="mt-1.5 text-[10px] tracking-[0.18em] uppercase"
                         style={{ color: "var(--text-muted)" }}
                       >
                         {label}
@@ -144,37 +142,38 @@ export function AboutSection({ paragraphs, aboutStats, traits, profile }: AboutS
             </div>
           </GlitchReveal>
 
-          {/* RIGHT: Specializations */}
-          <GlitchReveal className="lg:col-span-2" delay={200}>
-            <p
-              className="font-mono text-[10px] tracking-[0.25em] uppercase mb-5"
-              style={{ color: "var(--text-muted)" }}
-            >
-              Specializations
-            </p>
+          {/* RIGHT: Specializations 2×2 grid */}
+          <GlitchReveal delay={200}>
+            <div className="flex flex-col h-full">
+              <p
+                className="font-mono text-[10px] tracking-[0.25em] uppercase mb-5"
+                style={{ color: "var(--text-muted)" }}
+              >
+                
+              </p>
 
-            <div className="space-y-4">
-              {displayTraits.map(({ icon: iconName, title, desc }) => {
-                const Icon = ICON_MAP[iconName] ?? Lightbulb;
-                return (
-                  <article
-                    key={title}
-                    className="group rounded-lg border p-4 sm:p-5 transition-colors duration-200 hover:border-[rgba(34,211,238,0.25)]"
-                    style={{
-                      borderColor: "var(--border)",
-                      background: "var(--bg-card)",
-                    }}
-                  >
-                    <div className="flex items-start gap-4">
+              <div className="grid grid-cols-2 gap-4 flex-1">
+                {displayTraits.map(({ icon: iconName, title, desc }) => {
+                  const Icon = ICON_MAP[iconName] ?? Lightbulb;
+                  return (
+                    <article
+                      key={title}
+                      className="group rounded-lg border p-4 flex flex-col gap-3 transition-colors duration-200 hover:border-[rgba(34,211,238,0.25)]"
+                      style={{
+                        borderColor: "var(--border)",
+                        background:  "var(--bg-card)",
+                      }}
+                    >
+                      {/* Icon square */}
                       <div
                         className="w-9 h-9 shrink-0 rounded-md flex items-center justify-center"
-                        style={{ background: "rgba(34,211,238,0.06)" }}
+                        style={{ background: "rgba(34,211,238,0.08)" }}
                       >
                         <Icon size={16} className="text-blood-400" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3
-                          className="font-semibold text-sm tracking-tight mb-1"
+                          className="font-semibold text-sm tracking-tight mb-1.5"
                           style={{ color: "var(--text-primary)" }}
                         >
                           {title}
@@ -183,10 +182,10 @@ export function AboutSection({ paragraphs, aboutStats, traits, profile }: AboutS
                           {desc}
                         </p>
                       </div>
-                    </div>
-                  </article>
-                );
-              })}
+                    </article>
+                  );
+                })}
+              </div>
             </div>
           </GlitchReveal>
         </div>

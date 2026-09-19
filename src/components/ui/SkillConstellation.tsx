@@ -1112,7 +1112,6 @@ export function SkillConstellation({ skills = [] }: SkillConstellationProps) {
             color: "rgba(34,211,238,0.28)", pointerEvents: "none", userSelect: "none",
           }}
         >
-          — hover icon untuk detail
         </p>
       </div>
 

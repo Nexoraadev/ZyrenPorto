@@ -16,15 +16,15 @@ export async function GET() {
     const ci = (map.contact_info ?? {}) as Record<string, string>;
     return NextResponse.json({
       logo_url:  (map.site_logo?.url  as string) ?? null,
-      copyright: (map.footer_copyright?.text as string) ?? "Reavlenia Arezha",
+      copyright: (map.footer_copyright?.text as string) ?? "Alvaeran",
       socials: {
-        github:    ci.github    ?? "https://github.com/Rheaglitch",
+        github:    ci.github    ?? "https://github.com/Nexoraadev",
         linkedin:  ci.linkedin  ?? "https://linkedin.com/",
-        instagram: ci.instagram ?? "https://instagram.com/",
-        email:     ci.email     ?? "ohmyliinnn@gmail.com",
+        instagram: ci.instagram ?? "https://instagram.com/alvkzn_.1",
+        email:     ci.email     ?? "zulviyan07@gmail.com",
       },
     });
   } catch {
-    return NextResponse.json({ logo_url: null, copyright: "Reavlenia Arezha", socials: {} });
+    return NextResponse.json({ logo_url: null, copyright: "Alvaeran", socials: {} });
   }
 }

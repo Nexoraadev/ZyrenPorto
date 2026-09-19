@@ -79,15 +79,15 @@ export default async function Home() {
       />
 
       <Suspense fallback={<SectionFallback />}>
-        <ProjectsSection projects={projects} />
-      </Suspense>
-
-      <Suspense fallback={<SectionFallback />}>
         <AboutSection paragraphs={aboutParas} aboutStats={aboutStats} traits={aboutTraits} profile={aboutProfile} personalityTags={aboutPersonality} />
       </Suspense>
 
       <Suspense fallback={<SectionFallback />}>
         <SkillsSection skills={skills} heading={skillsHeading} />
+      </Suspense>
+
+      <Suspense fallback={<SectionFallback />}>
+        <ProjectsSection projects={projects} />
       </Suspense>
 
       <Suspense fallback={<SectionFallback />}>

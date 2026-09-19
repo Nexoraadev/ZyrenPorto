@@ -8,12 +8,12 @@ import { useEffect, useState } from "react";
 // removed unused socialIcons
 export function Footer() {
   const [logoUrl,   setLogoUrl  ] = useState<string | null>(null);
-  const [copyright, setCopyright] = useState("Reavlenia Arezha");
+  const [copyright, setCopyright] = useState("Alvaeran");
   const [socials,   setSocials  ] = useState({
-    github:    "https://github.com/Rheaglitch",
+    github:    "https://github.com/Nexoraadev",
     linkedin:  "https://linkedin.com/",
-    instagram: "https://instagram.com/",
-    email:     "ohmyliinnn@gmail.com",
+    instagram: "https://instagram.com/alvkzn_.1",
+    email:     "zulviyan07@gmail.com",
   });
 
   useEffect(() => {
