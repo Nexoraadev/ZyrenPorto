@@ -25,12 +25,13 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
       )}
     >
       {/* Thumbnail / Carousel */}
-      <div className="relative w-full h-48 bg-dark-900 overflow-hidden">
-        <div className={cn(project.nda_mode && "blur-sm scale-105 pointer-events-none")}>
+      <div className="relative w-full h-52 bg-dark-900 overflow-hidden flex-shrink-0">
+        <div className={cn("absolute inset-0", project.nda_mode && "blur-sm scale-105 pointer-events-none")}>
           <ImageCarousel
             images={project.project_images}
             alt={project.title}
             fallbackText={project.title}
+            className="absolute inset-0"
           />
         </div>
 
@@ -59,88 +60,82 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
         )}
 
         {/* Featured badge */}
-        {project.featured && (
+        {project.featured && !project.nda_mode && (
           <span className="absolute top-3 left-3 px-2 py-0.5 rounded text-[10px] font-mono bg-blood-800/80 text-blood-200 border border-blood-700/50 z-10 pointer-events-none">
             Featured
           </span>
         )}
-
-        {/* NDA badge (top-left, overrides featured) */}
-        {project.nda_mode && (
-          <span className="absolute top-3 left-3 px-2 py-0.5 rounded text-[10px] font-mono bg-yellow-900/80 text-yellow-300 border border-yellow-700/50 z-20 pointer-events-none flex items-center gap-1">
-            <Lock size={8} /> NDA
-          </span>
-        )}
-
-        {/* Category */}
-        <span className="absolute top-3 right-3 px-2 py-0.5 rounded text-[10px] font-mono bg-dark-950/80 text-dark-400 border border-dark-800 z-10 pointer-events-none">
-          {project.project_categories?.name ?? "—"}
-        </span>
       </div>
 
-      {/* Content */}
-      <div className="p-5 flex flex-col flex-1">
-        <h3 className="font-semibold text-dark-100 group-hover:text-blood-400 transition-colors mb-2">
-          {project.title}
-        </h3>
-        <p className="text-xs text-dark-500 leading-relaxed flex-1">
+      {/* Content — gambar di atas, info di bawah seperti referensi */}
+      <div className="p-4 flex flex-col flex-1">
+
+        {/* Row: title + brand logo */}
+        <div className="flex items-start justify-between gap-2 mb-1.5">
+          <h3 className="font-bold text-sm leading-tight text-dark-100 group-hover:text-blood-400 transition-colors">
+            {project.title}
+          </h3>
+          {/* Brand/category badge top-right */}
+          <span className="shrink-0 text-[10px] font-mono text-dark-600 leading-none mt-0.5">
+            {project.project_categories?.name ?? ""}
+          </span>
+        </div>
+
+        <p className="text-xs text-dark-500 leading-relaxed flex-1 mb-3">
           {project.description}
         </p>
 
-        {/* Tech stack */}
-        <div className="flex flex-wrap gap-1.5 mt-4">
-          {project.tech_stack.slice(0, 4).map((tech) => (
-            <span
-              key={tech}
-              className="px-2 py-0.5 rounded text-[10px] font-mono bg-dark-900 border border-dark-800 text-dark-500"
-            >
-              {tech}
+        {/* Badges row: Featured + Category + Links */}
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {project.featured && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono bg-blood-900/60 text-blood-300 border border-blood-800/60">
+                Featured
+              </span>
+            )}
+            {project.nda_mode && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono bg-yellow-900/50 text-yellow-400 border border-yellow-800/50">
+                <Lock size={8} /> NDA
+              </span>
+            )}
+            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono bg-dark-900/60 text-dark-500 border border-dark-800">
+              {project.project_categories?.name ?? "—"}
             </span>
-          ))}
-          {project.tech_stack.length > 4 && (
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-dark-900 border border-dark-800 text-dark-600">
-              +{project.tech_stack.length - 4}
-            </span>
-          )}
-        </div>
+          </div>
 
-        {/* Links */}
-        <div className="flex items-center gap-3 mt-5 pt-4 border-t border-dark-800">
-          {project.nda_mode ? (
-            <span className="flex items-center gap-1.5 text-xs text-yellow-600/70 font-mono">
-              <Lock size={10} /> Proyek ini bersifat rahasia (NDA)
-            </span>
-          ) : (
-            <>
-              {project.live_url && (
-                <a
-                  href={project.live_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs text-dark-400 hover:text-blood-400 transition-colors font-mono"
-                >
-                  <ExternalLink size={12} />
-                  Live Demo
-                </a>
-              )}
-              {project.github_url && (
-                <a
-                  href={project.github_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs text-dark-400 hover:text-blood-400 transition-colors font-mono"
-                >
-                  <Github size={12} />
-                  Source
-                </a>
-              )}
-              {!project.live_url && !project.github_url && (
-                <span className="text-xs text-dark-700 font-mono">
-                  {`// private project`}
-                </span>
-              )}
-            </>
-          )}
+          {/* Live / Source link */}
+          <div className="flex items-center gap-2">
+            {project.nda_mode ? (
+              <span className="flex items-center gap-1 text-[10px] text-yellow-600/60 font-mono">
+                <Lock size={9} /> Confidential
+              </span>
+            ) : (
+              <>
+                {project.live_url && (
+                  <a
+                    href={project.live_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-[11px] text-dark-400 hover:text-blood-400 transition-colors font-mono"
+                  >
+                    <ExternalLink size={11} />
+                    Live demo
+                  </a>
+                )}
+                {project.github_url && (
+                  <a
+                    href={project.github_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-[11px] text-dark-400 hover:text-blood-400 transition-colors font-mono"
+                  >
+                    <Github size={11} />
+                    Source
+                  </a>
+                )}
+              </>
+            )}
+          </div>
         </div>
       </div>
 

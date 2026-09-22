@@ -92,14 +92,16 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
         </GlitchReveal>
 
         {projects.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 auto-rows-[minmax(200px,auto)] lg:auto-rows-[220px] lg:[&>*:first-child]:row-span-2"
-            style={{ gridAutoFlow: "dense" }}
-          >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
             {projects.map((project, i) => {
               const variant = bentoVariant(i, projects.length);
               const isFeatured = i === 0;
               return (
-                <GlitchReveal key={project.id} delay={i * 70} className={variant.wrapper}>
+                <GlitchReveal
+                  key={project.id}
+                  delay={i * 70}
+                  className={cn(isFeatured && "md:col-span-2 lg:col-span-1")}
+                >
                   <BentoCard
                     project={project}
                     index={i}
@@ -138,7 +140,7 @@ function BentoCard({
   return (
     <article
       className={cn(
-        "group relative h-full min-h-[200px] rounded-2xl overflow-hidden border transition-all duration-300",
+        "group relative h-full rounded-2xl overflow-hidden border transition-all duration-300 flex flex-col",
         "hover:-translate-y-1",
       )}
       style={{
@@ -146,10 +148,16 @@ function BentoCard({
         background: "var(--bg-card)",
       }}
     >
-      <div className="relative w-full h-full">
-
+      {/* ── Image area — fixed tall height ── */}
+      <div className={cn(
+        "relative w-full overflow-hidden flex-shrink-0",
+        featured ? "h-56 sm:h-64" : "h-48 sm:h-52",
+      )}>
         {firstImage?.url ? (
-          <div className="absolute inset-0" style={{ filter: project.nda_mode ? "blur(6px) saturate(0.6)" : undefined }}>
+          <div
+            className="absolute inset-0"
+            style={{ filter: project.nda_mode ? "blur(6px) saturate(0.6)" : undefined }}
+          >
             <Image
               src={firstImage.url}
               alt={project.title}
@@ -163,233 +171,200 @@ function BentoCard({
           <div
             className="absolute inset-0"
             style={{
-              background: `linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%)`,
+              background: "linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%)",
             }}
           >
-            <div className="absolute inset-0 opacity-40"
+            <div
+              className="absolute inset-0 opacity-40"
               style={{
                 backgroundImage:
                   "radial-gradient(circle at 20% 30%, rgba(34,211,238,0.18), transparent 55%), radial-gradient(circle at 80% 70%, rgba(139,92,246,0.15), transparent 55%)",
               }}
             />
+            {/* Fallback initials */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="font-black text-4xl text-dark-800 select-none">
+                {project.title.slice(0, 2).toUpperCase()}
+              </span>
+            </div>
           </div>
         )}
 
-        <div
-          className="absolute inset-0 transition-opacity duration-300"
-          style={{
-            background:
-              "linear-gradient(to top, rgba(5,11,16,0.98) 0%, rgba(5,11,16,0.75) 40%, rgba(5,11,16,0.25) 70%, rgba(5,11,16,0) 100%)",
-          }}
-        />
-        <div
-          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400"
-          style={{
-            background:
-              "linear-gradient(135deg, rgba(34,211,238,0.14) 0%, rgba(139,92,246,0.08) 100%)",
-          }}
+        {/* NDA overlay */}
+        {project.nda_mode && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-dark-950/70 z-10 gap-2">
+            <Lock size={20} className="text-yellow-500" />
+            <span className="text-xs font-mono text-yellow-400/80">NDA / Confidential</span>
+          </div>
+        )}
+
+        {/* Hover tint */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+          style={{ background: "rgba(34,211,238,0.06)" }}
         />
 
+        {/* Top badges */}
         <div className="absolute top-3 left-3 right-3 flex items-start justify-between gap-2 z-10">
           <div className="flex items-center gap-1.5 flex-wrap">
             {featured && (
-              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-mono tracking-wider uppercase border backdrop-blur-sm"
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono tracking-wider uppercase border backdrop-blur-sm"
                 style={{
                   color: "#facc15",
-                  background: "rgba(250,204,21,0.1)",
-                  borderColor: "rgba(250,204,21,0.35)",
+                  background: "rgba(250,204,21,0.12)",
+                  borderColor: "rgba(250,204,21,0.4)",
                 }}
               >
-                <Sparkles size={10} /> Featured
+                <Sparkles size={9} /> Featured
               </span>
             )}
-            {project.nda_mode ? (
-              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-mono tracking-wider uppercase border backdrop-blur-sm"
-                style={{
-                  color: "#facc15",
-                  background: "rgba(234,179,8,0.08)",
-                  borderColor: "rgba(234,179,8,0.35)",
-                }}
-              >
-                <Lock size={10} /> NDA
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-mono tracking-wider uppercase border backdrop-blur-sm"
-                style={{
-                  color: "var(--text-secondary)",
-                  background: "rgba(0,0,0,0.4)",
-                  borderColor: "rgba(255,255,255,0.08)",
-                }}
-              >
-                {category}
-              </span>
-            )}
+            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-mono uppercase border backdrop-blur-sm"
+              style={{
+                color: "var(--text-secondary)",
+                background: "rgba(0,0,0,0.45)",
+                borderColor: "rgba(255,255,255,0.08)",
+              }}
+            >
+              {category}
+            </span>
           </div>
-          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-mono tracking-wider backdrop-blur-sm"
-            style={{
-              color: "var(--text-muted)",
-              background: "rgba(0,0,0,0.35)",
-            }}
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono backdrop-blur-sm"
+            style={{ color: "var(--text-muted)", background: "rgba(0,0,0,0.4)" }}
           >
             <span className="w-1 h-1 rounded-full bg-blood-400 animate-pulse" />
             #{String(index + 1).padStart(3, "0")}
           </span>
         </div>
 
+        {/* Video play button */}
         {!project.nda_mode && project.video_url && (
           <button
             onClick={() => setVideoOpen(true)}
             className="absolute inset-0 z-10 flex items-center justify-center"
             aria-label={`Play video: ${project.title}`}
           >
-            <span className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110"
+            <span className="w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110"
               style={{
                 background: "rgba(0,0,0,0.55)",
                 border: "1px solid rgba(255,255,255,0.15)",
-                boxShadow: "0 0 30px -10px rgba(34,211,238,0.5)",
               }}
             >
-              <Play size={18} className="text-white ml-0.5" />
+              <Play size={17} className="text-white ml-0.5" />
             </span>
           </button>
         )}
 
-        <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 md:p-6 z-10 flex flex-col gap-3">
-
-          <div>
-            <div className="flex items-center gap-2 mb-1 text-[10px] font-mono tracking-widest uppercase"
-              style={{ color: "rgba(148,163,184,0.8)" }}
-            >
-              {project.year && (
-                <>
-                  <Calendar size={10} className="text-blood-500" />
-                  <span>{project.year}</span>
-                  <span className="opacity-40">•</span>
-                </>
-              )}
-              <span>{project.client ?? "Personal Build"}</span>
-            </div>
-            <h3 className={cn(
-              "font-black tracking-tight group-hover:text-blood-400 transition-colors",
-              featured ? "text-xl sm:text-2xl leading-tight" : "text-base sm:text-lg leading-snug",
-            )}
-              style={{ color: "#e2e8f0" }}
-            >
-              {project.title}
-            </h3>
-          </div>
-
-          {variant.showDesc && project.description && (
-            <p className={cn(
-              "leading-relaxed",
-              featured ? "text-sm sm:text-[15px]" : "text-xs",
-            )}
-              style={{ color: "rgba(148,163,184,0.9)" }}
-            >
-              {featured
-                ? project.description
-                : project.description.length > 90
-                  ? `${project.description.slice(0, 90)}…`
-                  : project.description}
-            </p>
-          )}
-
-          {tech.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
-              {tech.slice(0, variant.showTechCount).map(t => (
-                <span key={t}
-                  className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-mono tracking-wide border backdrop-blur-sm"
-                  style={{
-                    color: "#5EEAD4",
-                    background: "rgba(34,211,238,0.07)",
-                    borderColor: "rgba(34,211,238,0.2)",
-                  }}
-                >
-                  {t}
-                </span>
-              ))}
-              {tech.length > variant.showTechCount && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-mono border backdrop-blur-sm"
-                  style={{
-                    color: "var(--text-muted)",
-                    borderColor: "rgba(148,163,184,0.18)",
-                  }}
-                >
-                  +{tech.length - variant.showTechCount}
-                </span>
-              )}
-            </div>
-          )}
-
-          <div className={cn(
-            "flex items-center justify-between",
-            featured ? "pt-2 mt-1" : "pt-1",
-          )}
-          >
-            {project.nda_mode ? (
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-mono"
-                style={{ color: "#facc15" }}
-              >
-                <Lock size={10} /> Bersifat rahasia
-              </span>
-            ) : hasLinks ? (
-              <div className="flex items-center gap-2">
-                {project.live_url && (
-                  <a
-                    href={project.live_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[11px] font-mono border transition-all hover:-translate-y-0.5"
-                    style={{
-                      color: "#5EEAD4",
-                      borderColor: "rgba(34,211,238,0.3)",
-                      background: "rgba(34,211,238,0.08)",
-                    }}
-                  >
-                    <ExternalLink size={11} /> Live
-                  </a>
-                )}
-                {project.github_url && (
-                  <a
-                    href={project.github_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[11px] font-mono border transition-all hover:-translate-y-0.5"
-                    style={{
-                      color: "var(--text-secondary)",
-                      borderColor: "var(--border-hover)",
-                    }}
-                  >
-                    <Github size={11} /> Source
-                  </a>
-                )}
-              </div>
-            ) : (
-              <span className="text-[11px] font-mono" style={{ color: "var(--text-muted)" }}>
-                {/* private repo */}
-                private repo
-              </span>
-            )}
-
-            <Link
-              href={`/projects#p-${project.id}`}
-              className="inline-flex items-center gap-1 text-[11px] font-mono transition-all group/cta"
-              style={{ color: "var(--text-secondary)" }}
-            >
-              <span className="group-hover/cta:text-blood-400 transition-colors">Details</span>
-              <ArrowRight size={11} className="opacity-60 -translate-x-1 group-hover/cta:opacity-100 group-hover/cta:translate-x-0 transition-all text-blood-500" />
-            </Link>
-          </div>
-        </div>
-
-        <span
-          className="absolute top-0 left-0 h-px w-0 group-hover:w-full transition-all duration-700 ease-out"
+        {/* Animated border lines on hover */}
+        <span className="absolute top-0 left-0 h-px w-0 group-hover:w-full transition-all duration-700 ease-out"
           style={{ background: "linear-gradient(to right, #22d3ee, transparent)" }}
         />
-        <span
-          className="absolute bottom-0 right-0 w-px h-0 group-hover:h-full transition-all duration-700 ease-out delay-75"
-          style={{ background: "linear-gradient(to bottom, #22d3ee, transparent)" }}
-        />
+      </div>
+
+      {/* ── Info area — bottom ── */}
+      <div className="flex flex-col flex-1 p-4 sm:p-5">
+
+        {/* Title + meta row */}
+        <div className="mb-1.5">
+          {project.year && (
+            <div className="flex items-center gap-1.5 mb-1 text-[10px] font-mono tracking-widest uppercase"
+              style={{ color: "rgba(148,163,184,0.7)" }}
+            >
+              <Calendar size={9} className="text-blood-500" />
+              <span>{project.year}</span>
+              {project.client && (
+                <>
+                  <span className="opacity-40">•</span>
+                  <span>{project.client}</span>
+                </>
+              )}
+            </div>
+          )}
+          <h3 className={cn(
+            "font-black tracking-tight group-hover:text-blood-400 transition-colors",
+            featured ? "text-lg sm:text-xl leading-tight" : "text-base leading-snug",
+          )}
+            style={{ color: "var(--text-primary)" }}
+          >
+            {project.title}
+          </h3>
+        </div>
+
+        {variant.showDesc && project.description && (
+          <p className="text-xs leading-relaxed flex-1 mb-3"
+            style={{ color: "rgba(148,163,184,0.85)" }}
+          >
+            {featured
+              ? project.description
+              : project.description.length > 80
+                ? `${project.description.slice(0, 80)}…`
+                : project.description}
+          </p>
+        )}
+
+        {/* Tech stack */}
+        {tech.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            {tech.slice(0, variant.showTechCount).map(t => (
+              <span key={t}
+                className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-mono border"
+                style={{
+                  color: "#5EEAD4",
+                  background: "rgba(34,211,238,0.06)",
+                  borderColor: "rgba(34,211,238,0.18)",
+                }}
+              >
+                {t}
+              </span>
+            ))}
+            {tech.length > variant.showTechCount && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-mono border"
+                style={{ color: "var(--text-muted)", borderColor: "rgba(148,163,184,0.15)" }}
+              >
+                +{tech.length - variant.showTechCount}
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Links row */}
+        <div className="flex items-center justify-between gap-2 mt-auto pt-3 border-t"
+          style={{ borderColor: "var(--border)" }}
+        >
+          {project.nda_mode ? (
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-mono" style={{ color: "#facc15" }}>
+              <Lock size={10} /> Bersifat rahasia
+            </span>
+          ) : hasLinks ? (
+            <div className="flex items-center gap-2">
+              {project.live_url && (
+                <a href={project.live_url} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[11px] font-mono border transition-all hover:-translate-y-0.5"
+                  style={{ color: "#5EEAD4", borderColor: "rgba(34,211,238,0.3)", background: "rgba(34,211,238,0.07)" }}
+                >
+                  <ExternalLink size={11} /> Live
+                </a>
+              )}
+              {project.github_url && (
+                <a href={project.github_url} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[11px] font-mono border transition-all hover:-translate-y-0.5"
+                  style={{ color: "var(--text-secondary)", borderColor: "var(--border-hover)" }}
+                >
+                  <Github size={11} /> Source
+                </a>
+              )}
+            </div>
+          ) : (
+            <span className="text-[11px] font-mono" style={{ color: "var(--text-muted)" }}>private repo</span>
+          )}
+
+          <Link
+            href={`/projects#p-${project.id}`}
+            className="inline-flex items-center gap-1 text-[11px] font-mono group/cta"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            <span className="group-hover/cta:text-blood-400 transition-colors">Details</span>
+            <ArrowRight size={11} className="opacity-60 -translate-x-1 group-hover/cta:opacity-100 group-hover/cta:translate-x-0 transition-all text-blood-500" />
+          </Link>
+        </div>
       </div>
 
       {!project.nda_mode && project.video_url && (

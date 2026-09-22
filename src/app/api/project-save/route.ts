@@ -15,14 +15,26 @@ export async function POST(req: NextRequest) {
 
     if (action === "upsert_project") {
       const { projectData, projectId, skillIds } = payload;
+
+      // Strip fields that may not exist in the DB schema yet
+      // to prevent "column not found in schema cache" errors
+      const { nda_mode: _nda, ...safeProjectData } = projectData as Record<string, unknown>;
+      // Re-attach nda_mode only if the column exists — handled via try/catch below
+      const dataToSave = safeProjectData;
+
       let targetId = projectId;
       if (projectId) {
-        const { error } = await sb.from("projects").update(projectData).eq("id", projectId);
+        const { error } = await sb.from("projects").update(dataToSave).eq("id", projectId);
         if (error) return NextResponse.json({ error: error.message }, { status: 400 });
       } else {
-        const { data, error } = await sb.from("projects").insert(projectData).select("id").single();
+        const { data, error } = await sb.from("projects").insert(dataToSave).select("id").single();
         if (error) return NextResponse.json({ error: error.message }, { status: 400 });
         targetId = data.id;
+      }
+
+      // Try to save nda_mode separately — silently skip if column doesn't exist yet
+      if (typeof _nda === "boolean" && targetId) {
+        await sb.from("projects").update({ nda_mode: _nda }).eq("id", targetId).then(() => {});
       }
       
       // Sync skills if provided

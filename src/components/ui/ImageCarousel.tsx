@@ -69,7 +69,9 @@ export function ImageCarousel({
           src={images[0].url}
           alt={alt}
           fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="object-cover group-hover:scale-105 transition-transform duration-500"
+          unoptimized={images[0].url.includes("supabase.co")}
         />
       </div>
     );
@@ -95,7 +97,9 @@ export function ImageCarousel({
             src={img.url}
             alt={`${alt} — ${i + 1}`}
             fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover"
+            unoptimized={img.url.includes("supabase.co")}
           />
         </div>
       ))}
