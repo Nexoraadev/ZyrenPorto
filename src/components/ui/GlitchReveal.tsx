@@ -7,10 +7,24 @@ interface GlitchRevealProps {
   children: React.ReactNode;
   className?: string;
   delay?: number;
+  /**
+   * Skip the reveal animation entirely — element is always visible.
+   * Use for above-the-fold content to avoid LCP penalty.
+   */
+  eager?: boolean;
 }
 
-export function GlitchReveal({ children, className, delay = 0 }: GlitchRevealProps) {
+export function GlitchReveal({ children, className, delay = 0, eager = false }: GlitchRevealProps) {
   const { ref, state } = useGlitchReveal();
+
+  // Eager mode: always visible, no animation — important for LCP elements
+  if (eager) {
+    return (
+      <div ref={ref} className={cn("relative", className)}>
+        {children}
+      </div>
+    );
+  }
 
   return (
     <div
@@ -22,7 +36,7 @@ export function GlitchReveal({ children, className, delay = 0 }: GlitchRevealPro
           state === "hidden"  ? 0 :
           state === "glitch"  ? 1 : 1,
         transform:
-          state === "hidden"  ? "translateY(20px)" :
+          state === "hidden"  ? "translateY(16px)" :
           state === "glitch"  ? "translateY(0)"    : "translateY(0)",
         transition:
           state === "hidden"  ? "none" :

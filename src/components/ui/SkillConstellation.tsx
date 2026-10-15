@@ -147,6 +147,8 @@ function useParallax(enabled: boolean) {
 
   useEffect(() => {
     if (!enabled) return;
+    // Skip on touch devices — no mouse to track
+    if (window.matchMedia("(hover: none)").matches) return;
     const tick = () => {
       cur.current.x += (tgt.current.x - cur.current.x) * 0.06;
       cur.current.y += (tgt.current.y - cur.current.y) * 0.06;

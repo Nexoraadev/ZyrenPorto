@@ -10,6 +10,10 @@ function PortraitGlow() {
   const rafRef  = useRef<number>(0);
 
   useEffect(() => {
+    // Skip mousemove RAF on touch devices — saves battery + main thread
+    const isTouchOnly = window.matchMedia("(hover: none)").matches;
+    if (isTouchOnly) return;
+
     const onMove = (e: MouseEvent) => {
       posRef.current = {
         x: 50 + (e.clientX / window.innerWidth  - 0.5) * 30,
@@ -33,9 +37,11 @@ function PortraitGlow() {
       }
       rafRef.current = requestAnimationFrame(animate);
     };
-    rafRef.current = requestAnimationFrame(animate);
+    // Delay start by 500ms — let critical content render first
+    const t = setTimeout(() => { rafRef.current = requestAnimationFrame(animate); }, 500);
 
     return () => {
+      clearTimeout(t);
       window.removeEventListener("mousemove", onMove);
       cancelAnimationFrame(rafRef.current);
     };

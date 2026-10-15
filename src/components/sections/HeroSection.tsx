@@ -15,6 +15,9 @@ function HeroBg() {
   const parCur  = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
+    // Skip on touch-only devices (mobile) — saves main thread during LCP
+    const isTouchOnly = window.matchMedia("(hover: none)").matches;
+
     const onMove = (e: MouseEvent) => {
       posRef.current = {
         x: 50 + (e.clientX / window.innerWidth  - 0.5) * 28,
@@ -25,7 +28,10 @@ function HeroBg() {
         y: (e.clientY / window.innerHeight - 0.5) * 12,
       };
     };
-    window.addEventListener("mousemove", onMove, { passive: true });
+
+    if (!isTouchOnly) {
+      window.addEventListener("mousemove", onMove, { passive: true });
+    }
 
     const animate = () => {
       // Glow follows pointer slowly
@@ -47,9 +53,11 @@ function HeroBg() {
       }
       rafRef.current = requestAnimationFrame(animate);
     };
-    rafRef.current = requestAnimationFrame(animate);
+    // Delay 500ms — let LCP image render first
+    const t = setTimeout(() => { rafRef.current = requestAnimationFrame(animate); }, 500);
 
     return () => {
+      clearTimeout(t);
       window.removeEventListener("mousemove", onMove);
       cancelAnimationFrame(rafRef.current);
     };
@@ -322,8 +330,8 @@ interface HeroContentProps {
 
 function HeroContent({ roles, nameFirst, nameLast, bio, stats, compact = false }: HeroContentProps) {
   const socials = [
-    { label: "GitHub",    href: "https://github.com/Rheaglitch" },
-    { label: "Instagram", href: "https://instagram.com/"        },
+    { label: "GitHub",    href: "https://github.com/Nexoraadev" },
+    { label: "Instagram", href: "https://instagram.com/alvkzn_.1" },
     { label: "LinkedIn",  href: "https://linkedin.com/"         },
   ];
 
@@ -356,7 +364,7 @@ function HeroContent({ roles, nameFirst, nameLast, bio, stats, compact = false }
         {/* Bio */}
         <p className={`leading-relaxed ${compact ? "text-xs" : "text-sm"}`}
           style={{ color: "var(--text-secondary)" }}>
-          {bio || "Menciptakan karya yang fungsional sekaligus indah — dari kode sampai kanvas."}
+          {bio || "Membangun pengalaman digital yang mulus dari ujung ke ujung — dari server sampai layar pengguna."}
         </p>
 
         {/* Stats */}
@@ -364,9 +372,9 @@ function HeroContent({ roles, nameFirst, nameLast, bio, stats, compact = false }
           {stats.length > 0
             ? stats.map(st => <StatPill key={st.label} value={st.value} label={st.label} />)
             : <>
-                <StatPill value="10+" label="Projects" />
-                <StatPill value="3+"  label="Years"    />
-                <StatPill value="5+"  label="Skills"   />
+                <StatPill value="5+"  label="Projects" />
+                <StatPill value="15+" label="Technologies" />
+                <StatPill value="3+"  label="Years Active" />
               </>
           }
         </div>
@@ -413,9 +421,9 @@ interface HeroSectionProps {
 
 const FALLBACK_IMAGE = "https://uskpxggqqfqidyrroobx.supabase.co/storage/v1/object/public/portfolio-assets/hero/1789625657620-nobg-k1pjb2prcff.png";
 
-export function HeroSection({ heroImageUrl, roles = [], nameFirst = "REAVLENIA", nameLast = "AREZHA", bio = "", stats = [] }: HeroSectionProps) {
+export function HeroSection({ heroImageUrl, roles = [], nameFirst = "VAERAN", nameLast = "KHAIZAN", bio = "", stats = [] }: HeroSectionProps) {
   const imageUrl = heroImageUrl || FALLBACK_IMAGE;
-  const displayRoles = roles.length > 0 ? roles : ["Web Developer", "Animator", "UI/UX Designer", "Illustrator"];
+  const displayRoles = roles.length > 0 ? roles : ["Fullstack Developer", "Web Developer", "Mobile Developer"];
 
   return (
     <section id="home"
